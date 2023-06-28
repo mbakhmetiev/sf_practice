@@ -1,0 +1,21 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.network "forwarded_port", guest: 5432, host: 15432, host_ip: "127.0.0.1"
+  config.vm.provider "virtualbox" do |vb| 
+  config.vm.provision "file", source: "./foo", destination: "emptyfile"
+    vb.memory = "2048"    
+    vb.gui = false
+  end
+  
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo apt-get update -y
+    sudo apt install software-properties-common -y
+    sudo add-apt-repository ppa:deadsnakes/ppa -y
+    sudo apt-get update -y
+    sudo apt install python3.8 python3-pip python3-dev libpq-dev -y
+    pip3 install psycopg2 django
+  SHELL
+end
